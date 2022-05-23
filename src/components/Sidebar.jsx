@@ -21,7 +21,6 @@ const Sidebar = ({ setAccount, account, broadcastContract, nftContract}) => {
 
   const getMyRTokens = async () => {
     const myRTokens_ = await broadcastContract.getRTokensOfOwner(account);
-
     setMyRTokens(() => {
       return myRTokens_.map((w) => (
         w.toNumber()
@@ -73,6 +72,7 @@ const Sidebar = ({ setAccount, account, broadcastContract, nftContract}) => {
       if (!broadcastContract || !account) return;
       getMyRTokens();
       getMySTokens();
+
       // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [broadcastContract]);
 
@@ -102,7 +102,7 @@ const Sidebar = ({ setAccount, account, broadcastContract, nftContract}) => {
           ></textarea>
           <br />
           <button onClick={sendReceiverTxn} disabled={!!txnStatus || !account}>
-            {txnStatus || "Mint Receiver NFT"}
+            {txnStatus || "Mint Receiver Token"}
           </button>
           <br />
           <br />
@@ -123,7 +123,7 @@ const Sidebar = ({ setAccount, account, broadcastContract, nftContract}) => {
           ></textarea>
           <br />
           <button onClick={sendSenderTxn} disabled={!!txnStatus || !account}>
-            {txnStatus || "Mint Sender NFT"}
+            {txnStatus || "Mint Sender Token"}
           </button>
          </>
       )}
