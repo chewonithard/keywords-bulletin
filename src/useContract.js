@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { useState, useEffect } from "react";
 
-const useChatContract = (contractAddress, web3ChatAbi, account) => {
+const useContract = (contractAddress, web3ChatAbi, account) => {
   const { ethereum } = window;
   const [webThreeProvider, setWebThreeProvider] = useState();
   const [signer, setSigner] = useState();
@@ -33,4 +33,4 @@ const useChatContract = (contractAddress, web3ChatAbi, account) => {
   );
 };
 
-export default useChatContract;
+export default useContract;

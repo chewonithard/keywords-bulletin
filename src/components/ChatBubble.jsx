@@ -2,15 +2,16 @@ import React from "react";
 
 
 
-const ChatBubble = ({ ownMessage, address, message }) => {
-  const bubblePosition = ownMessage ? "right" : "left";
+const ChatBubble = ({ address, receiver, message }) => {
+  const bubblePosition = "left";
   return (
     <div className="chat__row">
-      {!ownMessage && <small>{address}</small>}
+      {<small>From ...{address.slice(-5)}</small>}
       <div className={["chat__bubble", bubblePosition].join(" ")}>
         <div className={["chat__message", bubblePosition].join(" ")}>
-          {ownMessage}
-          {message}
+          <small>To: {receiver}</small>
+          <br />
+          <small>Message: {message}</small>
         </div>
       </div>
     </div>

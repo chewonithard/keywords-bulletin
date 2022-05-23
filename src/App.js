@@ -2,23 +2,36 @@ import React, { useState } from "react";
 import "./App.css";
 import Chat from "./components/Chat";
 import Sidebar from "./components/Sidebar";
-import BlockchainChatArtifact from "./contract/BlockchainChat-artifact.json";
-import useChatContract from "./useChatContract";
+import BroadcastArtifact from "./contract/KeywordsBroadcast.json";
+import NFTArtifact from "./contract/KeywordsNFT.json";
+import useContract from "./useContract";
 
 function App() {
-  // const contractAddress = "0xD99f113cAd1fe2eeebe0E7383415B586704DB5a3";
-  const contractAddress = "0x42D5e7523737279b1Bcdefdf8f9Ff4Ad465b540D";
-  const [account, setAccount] = useState("");
-  const chatContract = useChatContract(
-    contractAddress,
-    BlockchainChatArtifact.abi,
+  const [account, setAccount] = useState();
+
+  const broadcastContractAddress = "0xeaEB3E97cCEf999cD254455e7a8e02b4808D7F54";
+  const broadcastContract = useContract(
+    broadcastContractAddress,
+    BroadcastArtifact.abi,
+    account
+  );
+
+  const nftContractAddress = "0xc73aaBa487EEB4b26BD2BeeEBd54d2e42617E9a3";
+  const nftContract = useContract(
+    nftContractAddress,
+    NFTArtifact.abi,
     account
   );
 
   return (
     <div className="App">
-      <Sidebar setAccount={setAccount} account={account} />
-      <Chat account={account} chatContract={chatContract} />
+      <Sidebar
+        setAccount={setAccount}
+        account={account}
+        broadcastContract={broadcastContract}
+        nftContract={nftContract}
+      />
+      <Chat account={account} broadcastContract={broadcastContract} />
     </div>
   );
 }

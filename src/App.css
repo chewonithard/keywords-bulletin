@@ -19,7 +19,7 @@ code {
 }
 
 .App {
-  width: 800px;
+  width: 1200px;
   display: flex;
   margin: 0 auto;
   height: 80vh;
@@ -32,20 +32,24 @@ code {
 }
 
 .chat {
+  display: flex;
+  flex-direction: column;
+  width: 1000px;
+}
+
+.chat__messages {
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 83% 1fr;
+  grid-template-rows: 1fr;
   gap: 0px 0px;
   grid-template-areas:
     "."
     ".";
+  height: 80%;
   width: 100%;
   overflow: scroll;
   border: 1px solid black;
-}
-
-.chat_messages {
-  overflow: visible scroll;
+  /* overflow: visible scroll; */
   padding-bottom: 20px;
   border-top-left-radius: 20px;
 }
@@ -61,11 +65,20 @@ code {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 10px;
+  margin-top: 20px;
+}
+
+.inputId {
+  width: 40%;
+}
+
+.inputMint {
+  width: 40%;
 }
 
 textarea {
   width: 100%;
+  margin-right: 2px;
 }
 
 .chat__row {
