@@ -16,7 +16,7 @@ function App() {
     account
   );
 
-  const nftContractAddress = "0xc73aaBa487EEB4b26BD2BeeEBd54d2e42617E9a3";
+  const nftContractAddress = "0xF961Fad159FF2ABb009585d22B513B068A235846";
   const nftContract = useContract(
     nftContractAddress,
     NFTArtifact.abi,
