@@ -54,6 +54,7 @@ const Chat = ({ account, broadcastContract }) => {
       await messageTxn.wait();
     } catch (e) {
       console.warn("Transaction failed with error", e);
+      alert("Error must hold reciprocal Sender NFT") // hardcoded error, need to change in future
     } finally {
       setInputContent("");
       setInputId("");

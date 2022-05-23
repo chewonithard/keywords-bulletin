@@ -39,17 +39,32 @@ const Sidebar = ({ setAccount, account, broadcastContract, nftContract}) => {
     });
   };
 
-  const sendTxn = async () => {
+  const sendReceiverTxn = async () => {
     if (!broadcastContract) return;
     try {
       setTxnStatus("WAIT");
-      const messageTxn = await nftContract.mintSenderNft(inputRContent);
+      const messageTxn = await nftContract.mintReceiverNft(inputRContent);
       setTxnStatus("SENDING");
       await messageTxn.wait();
     } catch (e) {
       console.warn("Transaction failed with error", e);
     } finally {
       setInputRContent("");
+      setTxnStatus(null);
+    }
+  };
+
+    const sendSenderTxn = async () => {
+    if (!broadcastContract) return;
+    try {
+      setTxnStatus("WAIT");
+      const messageTxn = await nftContract.mintSenderNft(inputSContent);
+      setTxnStatus("SENDING");
+      await messageTxn.wait();
+    } catch (e) {
+      console.warn("Transaction failed with error", e);
+    } finally {
+      setInputSContent("");
       setTxnStatus(null);
     }
   };
@@ -79,14 +94,14 @@ const Sidebar = ({ setAccount, account, broadcastContract, nftContract}) => {
           <br />
           <textarea className="inputMint"
             disabled={!!txnStatus || !account}
-            placeholder="Keyword to mint"
-            value={inputSContent}
+            placeholder="Enter keyword to mint"
+            value={inputRContent}
             onChange={(e) => {
               setInputRContent(e.target.value);
             }}
           ></textarea>
           <br />
-          <button onClick={sendTxn} disabled={!!txnStatus || !account}>
+          <button onClick={sendReceiverTxn} disabled={!!txnStatus || !account}>
             {txnStatus || "Mint Receiver NFT"}
           </button>
           <br />
@@ -100,14 +115,14 @@ const Sidebar = ({ setAccount, account, broadcastContract, nftContract}) => {
           <br />
           <textarea className="inputMint"
             disabled={!!txnStatus || !account}
-            placeholder="Keyword to mint"
+            placeholder="Enter keyword to mint"
             value={inputSContent}
             onChange={(e) => {
               setInputSContent(e.target.value);
             }}
           ></textarea>
           <br />
-          <button onClick={sendTxn} disabled={!!txnStatus || !account}>
+          <button onClick={sendSenderTxn} disabled={!!txnStatus || !account}>
             {txnStatus || "Mint Sender NFT"}
           </button>
          </>
