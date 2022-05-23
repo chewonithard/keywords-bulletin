@@ -1,23 +1,24 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import "./App.css";
+import Chat from "./components/Chat";
+import Sidebar from "./components/Sidebar";
+import BlockchainChatArtifact from "./contract/BlockchainChat-artifact.json";
+import useChatContract from "./useChatContract";
 
 function App() {
+  // const contractAddress = "0xD99f113cAd1fe2eeebe0E7383415B586704DB5a3";
+  const contractAddress = "0x42D5e7523737279b1Bcdefdf8f9Ff4Ad465b540D";
+  const [account, setAccount] = useState("");
+  const chatContract = useChatContract(
+    contractAddress,
+    BlockchainChatArtifact.abi,
+    account
+  );
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Sidebar setAccount={setAccount} account={account} />
+      <Chat account={account} chatContract={chatContract} />
     </div>
   );
 }
