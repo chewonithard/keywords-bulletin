@@ -50,6 +50,7 @@ const Sidebar = ({ setAccount, account, broadcastContract, nftContract}) => {
     } finally {
       setInputRContent("");
       setTxnStatus(null);
+      getMyRTokens();
     }
   };
 
@@ -65,6 +66,7 @@ const Sidebar = ({ setAccount, account, broadcastContract, nftContract}) => {
     } finally {
       setInputSContent("");
       setTxnStatus(null);
+      getMySTokens();
     }
   };
 
