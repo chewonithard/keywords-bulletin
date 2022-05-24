@@ -4,8 +4,8 @@ import useIsMetaMaskInstalled from "../useIsMetaMaskInstalled.js";
 
 const Sidebar = ({ setAccount, account, broadcastContract, nftContract}) => {
   const isMetaMaskInstalled = useIsMetaMaskInstalled();
-  const [myRTokens, setMyRTokens] = useState([]);
-  const [mySTokens, setMySTokens] = useState([]);
+  const [rTokensHash, setRTokensHash] = useState({});
+  const [sTokensHash, setSTokensHash] = useState({});
   const [inputRContent, setInputRContent] = useState("");
   const [inputSContent, setInputSContent] = useState("");
   const [txnStatus, setTxnStatus] = useState(null);
@@ -19,24 +19,30 @@ const Sidebar = ({ setAccount, account, broadcastContract, nftContract}) => {
       .catch((err) => console.log(err));
   };
 
-  const getMyRTokens = async () => {
-    const myRTokens_ = await broadcastContract.getRTokensOfOwner(account);
-    setMyRTokens(() => {
-      return myRTokens_.map((w) => (
-        w.toNumber()
-      ));
-    });
-  };
+  async function getMyRTokens() {
+    let tokenHash = {}
+    const myRTokensArray = await broadcastContract.getRTokensOfOwner(account);
+    const myRTokensArray_ = myRTokensArray.map((x) => x.toNumber())
 
-  const getMySTokens = async () => {
-    const mySTokens_ = await broadcastContract.getSTokensOfOwner(account);
+    myRTokensArray_.forEach(async (tokenId) => {
+      const keyword = await broadcastContract.convertIdtoKeyword(tokenId);
 
-    setMySTokens(() => {
-      return mySTokens_.map((w) => (
-        w.toNumber()
-      ));
+      tokenHash[tokenId] = keyword
     });
-  };
+    return setRTokensHash(tokenHash);
+  }
+  async function getMySTokens() {
+    let tokenHash = {}
+    const mySTokensArray = await broadcastContract.getSTokensOfOwner(account);
+    const mySTokensArray_ = mySTokensArray.map((x) => x.toNumber())
+
+    mySTokensArray_.forEach(async (tokenId) => {
+      const keyword = await broadcastContract.convertIdtoKeyword(tokenId);
+
+      tokenHash[tokenId] = keyword
+    });
+    return setSTokensHash(tokenHash);
+  }
 
   const sendReceiverTxn = async () => {
     if (!broadcastContract) return;
@@ -67,6 +73,7 @@ const Sidebar = ({ setAccount, account, broadcastContract, nftContract}) => {
       setInputSContent("");
       setTxnStatus(null);
       getMySTokens();
+      getMyRTokens();
     }
   };
 
@@ -74,7 +81,6 @@ const Sidebar = ({ setAccount, account, broadcastContract, nftContract}) => {
       if (!broadcastContract || !account) return;
       getMyRTokens();
       getMySTokens();
-
       // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [broadcastContract]);
 
@@ -89,9 +95,11 @@ const Sidebar = ({ setAccount, account, broadcastContract, nftContract}) => {
           <br />
           <b>My Receiver Tokens:</b>
           <br />
-          {myRTokens.map((m, i) => (
-            <small key={i}>{m} </small>
+
+          {Object.entries(rTokensHash).map(([k, v], i)=>(
+            <small key={i}>{v}[{k}], </small>
           ))}
+
          <br />
           <br />
           <textarea className="inputMint"
@@ -110,8 +118,8 @@ const Sidebar = ({ setAccount, account, broadcastContract, nftContract}) => {
           <br />
           <b>My Sender Tokens:</b>
           <br />
-          {mySTokens.map((m, i) => (
-            <small key={i}>{m} </small>
+          {Object.entries(sTokensHash).map(([k, v], i)=>(
+            <small key={i}>{v}[{k}], </small>
           ))}
           <br />
           <br />
