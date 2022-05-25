@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import useIsMetaMaskInstalled from "../useIsMetaMaskInstalled.js";
 
-const Sidebar = ({ setAccount, account, broadcastContract, nftContract}) => {
+const Sidebar = ({ setAccount, account, broadcastContract, nftContract, tokensHash}) => {
   const isMetaMaskInstalled = useIsMetaMaskInstalled();
-  const [tokensHash, setTokensHash] = useState({});
+
   const [inputRContent, setInputRContent] = useState("");
   const [inputSContent, setInputSContent] = useState("");
   const [txnStatus, setTxnStatus] = useState(null);
@@ -48,38 +48,10 @@ const Sidebar = ({ setAccount, account, broadcastContract, nftContract}) => {
     }
   };
 
-  function timeout(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
 
 
-useEffect(() => {
-    if (!broadcastContract || !account) return;
-    const getMyTokens = async () => {
-      let _tokenHash = {};
-      let promises = [];
-      // get tokenIds from smart contract
-      promises.push(broadcastContract.getRTokensOfOwner(account));
-      promises.push(broadcastContract.getSTokensOfOwner(account));
 
-      // resolve all promises
-      let allTokens = await Promise.all(promises);
 
-      // combine tokenId arrays and convert each element to number
-      allTokens = allTokens[0].concat(allTokens[1]).map((x) => x.toNumber());
-
-      // loop through allTokens and convert Id to Keyword calling smart contract
-      allTokens.forEach(async (tokenId) => {
-        const keyword = await broadcastContract.convertIdtoKeyword(tokenId);
-        _tokenHash[tokenId] = keyword;
-      });
-
-      await timeout(1000)
-
-      setTokensHash(_tokenHash);
-    };
-    getMyTokens().catch(console.error);
-  }, [account, broadcastContract]);
 
   return (
     <div className="sidebar">
@@ -92,7 +64,7 @@ useEffect(() => {
           <br />
           <b>My Receiver Tokens:</b>
           <br />
-
+          {console.log("rendering again")}
           {Object.entries(tokensHash).map(([k, v], i)=>{
             if (k < 20000) {
              return <small key={i}>{v}[{k}], </small>

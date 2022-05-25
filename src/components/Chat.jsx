@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ChatBubble from "./ChatBubble";
 import { ethers } from "ethers";
 
-const Chat = ({ account, broadcastContract }) => {
+const Chat = ({ account, broadcastContract, tokensHash}) => {
   const [inputContent, setInputContent] = useState("");
   const [inputId, setInputId] = useState("");
   const [txnStatus, setTxnStatus] = useState(null);
@@ -83,14 +83,17 @@ const Chat = ({ account, broadcastContract }) => {
         )}
         {messages &&
           messages.length > 0 &&
-          messages.map((m, i) => (
+          messages.map((m, i) => {
+            if (m.receiver in tokensHash)
+            return (
             <ChatBubble
               key={i}
               address={m.address}
               receiver={m.receiver}
               message={m.content}
+              tokensHash={tokensHash}
             />
-          ))}
+          )})}
       </div>
       <div className="chat__actions-wrapper">
         {!account && (
