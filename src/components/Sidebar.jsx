@@ -4,8 +4,7 @@ import useIsMetaMaskInstalled from "../useIsMetaMaskInstalled.js";
 
 const Sidebar = ({ setAccount, account, broadcastContract, nftContract}) => {
   const isMetaMaskInstalled = useIsMetaMaskInstalled();
-  const [rTokensHash, setRTokensHash] = useState({});
-  const [sTokensHash, setSTokensHash] = useState({});
+  const [tokensHash, setTokensHash] = useState({});
   const [inputRContent, setInputRContent] = useState("");
   const [inputSContent, setInputSContent] = useState("");
   const [txnStatus, setTxnStatus] = useState(null);
@@ -19,31 +18,6 @@ const Sidebar = ({ setAccount, account, broadcastContract, nftContract}) => {
       .catch((err) => console.log(err));
   };
 
-  async function getMyRTokens() {
-    let tokenHash = {}
-    const myRTokensArray = await broadcastContract.getRTokensOfOwner(account);
-    const myRTokensArray_ = myRTokensArray.map((x) => x.toNumber())
-
-    myRTokensArray_.forEach(async (tokenId) => {
-      const keyword = await broadcastContract.convertIdtoKeyword(tokenId);
-
-      tokenHash[tokenId] = keyword
-    });
-    return setRTokensHash(tokenHash);
-  }
-  async function getMySTokens() {
-    let tokenHash = {}
-    const mySTokensArray = await broadcastContract.getSTokensOfOwner(account);
-    const mySTokensArray_ = mySTokensArray.map((x) => x.toNumber())
-
-    mySTokensArray_.forEach(async (tokenId) => {
-      const keyword = await broadcastContract.convertIdtoKeyword(tokenId);
-
-      tokenHash[tokenId] = keyword
-    });
-    return setSTokensHash(tokenHash);
-  }
-
   const sendReceiverTxn = async () => {
     if (!broadcastContract) return;
     try {
@@ -56,7 +30,6 @@ const Sidebar = ({ setAccount, account, broadcastContract, nftContract}) => {
     } finally {
       setInputRContent("");
       setTxnStatus(null);
-      getMyRTokens();
     }
   };
 
@@ -72,17 +45,41 @@ const Sidebar = ({ setAccount, account, broadcastContract, nftContract}) => {
     } finally {
       setInputSContent("");
       setTxnStatus(null);
-      getMySTokens();
-      getMyRTokens();
     }
   };
 
-  useEffect(() => {
-      if (!broadcastContract || !account) return;
-      getMyRTokens();
-      getMySTokens();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [broadcastContract]);
+  function timeout(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+
+useEffect(() => {
+    if (!broadcastContract || !account) return;
+    const getMyTokens = async () => {
+      let _tokenHash = {};
+      let promises = [];
+      // get tokenIds from smart contract
+      promises.push(broadcastContract.getRTokensOfOwner(account));
+      promises.push(broadcastContract.getSTokensOfOwner(account));
+
+      // resolve all promises
+      let allTokens = await Promise.all(promises);
+
+      // combine tokenId arrays and convert each element to number
+      allTokens = allTokens[0].concat(allTokens[1]).map((x) => x.toNumber());
+
+      // loop through allTokens and convert Id to Keyword calling smart contract
+      allTokens.forEach(async (tokenId) => {
+        const keyword = await broadcastContract.convertIdtoKeyword(tokenId);
+        _tokenHash[tokenId] = keyword;
+      });
+
+      await timeout(1000)
+
+      setTokensHash(_tokenHash);
+    };
+    getMyTokens().catch(console.error);
+  }, [account, broadcastContract]);
 
   return (
     <div className="sidebar">
@@ -96,9 +93,12 @@ const Sidebar = ({ setAccount, account, broadcastContract, nftContract}) => {
           <b>My Receiver Tokens:</b>
           <br />
 
-          {Object.entries(rTokensHash).map(([k, v], i)=>(
-            <small key={i}>{v}[{k}], </small>
-          ))}
+          {Object.entries(tokensHash).map(([k, v], i)=>{
+            if (k < 20000) {
+             return <small key={i}>{v}[{k}], </small>
+            }
+          })
+          }
 
          <br />
           <br />
@@ -118,9 +118,13 @@ const Sidebar = ({ setAccount, account, broadcastContract, nftContract}) => {
           <br />
           <b>My Sender Tokens:</b>
           <br />
-          {Object.entries(sTokensHash).map(([k, v], i)=>(
-            <small key={i}>{v}[{k}], </small>
-          ))}
+
+          {Object.entries(tokensHash).map(([k, v], i)=>{
+            if (k > 20000) {
+             return <small key={i}>{v}[{k}], </small>
+            }
+          })
+          }
           <br />
           <br />
           <textarea className="inputMint"
